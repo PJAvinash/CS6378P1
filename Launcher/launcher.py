@@ -32,10 +32,10 @@ subprocess.run('cd .. && javac Main.java', shell=True)
 # Loop through each host and SSH into it to execute command
 remotehosts = list(hosts.keys())
 for host in remotehosts:
-    ssh_command = f"ssh -f {netID}@{host} 'cd CS6378/P1/CS6378P1 && java Main Launcher/{args.config_file}'"
-    if(currentHost == host):
-        ssh_command = f"java Main Launcher/{args.config_file}"
-    print(ssh_command)
-    # Start a new process to run the SSH command
-    p = Process(target=subprocess.Popen, args=(ssh_command,), kwargs={'shell':True})
-    p.start()
+    if currentHost == host:
+        command = f"java Main Launcher/{args.config_file}"
+    else:
+        command = f"ssh -o 'StrictHostKeyChecking=no' {netID}@{host} 'cd CS6378/P1/CS6378P1 && java Main Launcher/{args.config_file}'"
+    print(command)
+    process = subprocess.Popen(command, shell=True)
+    process.wait()
