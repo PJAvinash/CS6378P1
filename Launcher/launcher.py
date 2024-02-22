@@ -35,7 +35,7 @@ for host in remotehosts:
     if currentHost == host:
         command = f"cd .. &&java Main Launcher/{args.config_file}"
     else:
-        command = f"ssh -o 'StrictHostKeyChecking=no' {netID}@{host} 'cd CS6378/P1/CS6378P1 && java Main Launcher/{args.config_file}'"
+        command = f"ssh -f {netID}@{host} 'cd CS6378/P1/CS6378P1 && java Main Launcher/{args.config_file}'"
     print(command)
     process = subprocess.Popen(command, shell=True)
     process.wait()
