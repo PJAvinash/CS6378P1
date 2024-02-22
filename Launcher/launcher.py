@@ -28,7 +28,7 @@ for line in lines:
         port = int(match.group(2))
         hosts[hostname] = port
 
-subprocess.run('cd .. && javac Main.java', shell=True)
+subprocess.run('cd .. && javac *.java', shell=True)
 # Loop through each host and SSH into it to execute command
 remotehosts = list(hosts.keys())
 for host in remotehosts:
