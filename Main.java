@@ -49,7 +49,6 @@ public class Main {
                 processingNode.addNeighbor(uidlist.get(i), hostnames.get(i), portnumbers.get(i));
             }
         }
-        processingNode.runCausalBroadcast();
-        
+        processingNode.runCausalBroadcast(100);
     }
 }

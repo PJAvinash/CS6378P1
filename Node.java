@@ -195,7 +195,7 @@ public void startBroadcasting(int N) throws InterruptedException {
         }
     }
 
-    public void runCausalBroadcast() {
+    public void runCausalBroadcast(int N) {
         Thread receiverThread = new Thread(() -> {
             try {
                 this.startListening();
@@ -205,7 +205,7 @@ public void startBroadcasting(int N) throws InterruptedException {
         });
         Thread senderThread = new Thread(() -> {
             try {
-                this.startBroadcasting(this.numProc);
+                this.startBroadcasting(N);
             } catch (Exception e) {
                 e.printStackTrace(); 
             }
