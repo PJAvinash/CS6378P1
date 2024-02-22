@@ -1,6 +1,7 @@
 import java.util.Arrays;
+import java.io.Serializable;
 
-public class Message implements Comparable<Message> {
+public class Message implements Comparable<Message>, Serializable {
     int from;
     int[] vectortimestamp;
     MessageType messageType;
