@@ -68,25 +68,20 @@ public class Node {
 
     public boolean isCausallyReady(int[] messageTimestamp) {
         timestamplock.readLock().lock();
-        int highercount = 0;
-        boolean isNext = false;
-        for(int i = 0; i<this.vectorclock.length && highercount <2 ;i++){
+        boolean returnval = true;
+        for(int i = 0; i<this.vectorclock.length && returnval ;i++){
             if(vectorclock[i] < messageTimestamp[i]){
-                highercount = highercount + 1;
-                if(messageTimestamp[i]  == 1+vectorclock[i]){
-                    isNext = true;
-                }
+                returnval = false;
             }
         }
         timestamplock.readLock().unlock();
-        return (highercount ==0 || (isNext && (highercount == 1)));
+        return returnval;
     }
 
-
-    public synchronized void addMessage(Message inputMessage) {  
+    public synchronized void addMessage(Message inputMessage) { 
+        this.updateClock(inputMessage.from); 
         if(this.isCausallyReady(inputMessage.vectortimestamp)){
             this.deliveredMessages.add(inputMessage);
-            this.updateClock(inputMessage.from);
             System.out.println(inputMessage.toString());
             // Retrieve deliverable messages and remove them from bufferedMessages
             List<Message> dm = this.getDeliverableMessages();
@@ -97,7 +92,7 @@ public class Node {
             }
         } else {
             this.bufferedMessages.add(inputMessage);
-            this.updateClock(inputMessage.from);
+           
         }
     }
 
