@@ -39,6 +39,6 @@ do
     continue
   fi
   echo "Starting main in $remotehost ..."
-  ssh -f $netID@$remotehost "cd /CS6378/P1/CS6378P1 && java Main Launcher/$configPath" &
+  ssh -f $netID@$remotehost "cd CS6378/P1/CS6378P1 && java Main Launcher/$configPath" &
   sleep 1
 done
