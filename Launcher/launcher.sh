@@ -15,7 +15,7 @@ host=$(hostname)
 
 # Compile the Java program in the parent directory
 cd ..
-javac Main.java
+javac *.java
 
 #connect to all nodes using ssh.
 for remotehost in "${hostname_array[@]}"
@@ -33,6 +33,7 @@ current_dir=$(dirname "$PWD")
 # Remove "/Launcher" from the current directory
 updated_dir="${current_dir/\/Launcher}"
 
+echo ${updated_dir}
 
 # Loop through the nodes and execute a command over SSH
 for remotehost in "${hostname_array[@]}"
