@@ -6,12 +6,14 @@ public class Message implements Comparable<Message>, Serializable {
     int[] vectortimestamp;
     MessageType messageType;
     String content;
+    long T; 
 
     public Message(int from, int[] vectortimestamp, MessageType messageType, String content) {
         this.from = from;
         this.vectortimestamp = vectortimestamp;
         this.messageType = messageType;
         this.content = content;
+        this.T = System.currentTimeMillis();
     }
 
     public void setTime(int[] input) {
@@ -75,7 +77,7 @@ public class Message implements Comparable<Message>, Serializable {
 
     @Override
     public String toString() {
-        return " from : " + from + " timestamp: " + Arrays.toString(vectortimestamp) + " messageType: "
+        return "T: "+  this.T +" from : " + from + " timestamp: " + Arrays.toString(vectortimestamp) + " messageType: "
                 + messageType.toString() + " content : " + this.content;
     }
 }
