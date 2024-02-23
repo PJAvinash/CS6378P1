@@ -91,15 +91,15 @@ public class Node {
         this.updateClock(inputMessage.from);
         if (this.isCausallyReady(inputMessage.vectortimestamp)) {
             this.deliveredMessages.add(inputMessage);
-            System.out.println(inputMessage.toString());
+            //System.out.println(inputMessage.toString());
             this.logMessage(inputMessage.toString());
             // Retrieve deliverable messages and remove them from bufferedMessages
             List<Message> dm = this.getDeliverableMessages();
             this.deliveredMessages.addAll(dm);
             bufferedMessages.removeAll(dm);
             for (Message message : dm) {
-                System.out.println(message.toString());
-                this.logMessage(inputMessage.toString());
+                //System.out.println(message.toString());
+                this.logMessage(message.toString());
             }
         } else {
             this.bufferedMessages.add(inputMessage);
