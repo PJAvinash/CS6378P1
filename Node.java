@@ -110,7 +110,9 @@ public class Node {
             // Retrieve deliverable messages and remove them from bufferedMessages
             List<Message> dm = this.getDeliverableMessages();
             for (Message m : dm) {
-                System.out.println(m.toString());
+                if(this.uid == 0){
+                    System.out.println(m.toString());
+                }
             }
             dm.forEach(this::onDelivery);
         } else {
