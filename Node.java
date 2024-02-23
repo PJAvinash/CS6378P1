@@ -12,6 +12,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -98,7 +99,7 @@ public class Node {
         this.deliveredMessages.add(inputMessage);
         this.bufferedMessages.remove(inputMessage);
         if(this.uid == 0){
-            System.out.println(inputMessage.toString());
+            System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.vectorclock));
         }
         this.logMessage(inputMessage.toString());
         this.updateTerminationFrom(inputMessage);
