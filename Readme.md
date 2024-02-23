@@ -15,7 +15,12 @@ after receiving m at j from i;
 
 isReadyForCausalDelivery(inboundMessage, Process_i):
     return ( For All k inboundMessage.vectortimestamp[k] <= V_i[k])
-    
+
+
+For execution, clone this repo https://github.com/PJAvinash/CS6378P1.git
+
+go to /Launcher in terminal run 'chmod +x launcher.sh && ./launcher.sh config.txt'
+For cleaning up processes 'chmod +x cleanup.sh && ./cleanup.sh config.txt'
 
 
 
