@@ -110,11 +110,8 @@ public class Node {
         // Thread.sleep(random.nextInt(10));
         this.updateClock(inputMessage.from);
         this.bufferedMessages.add(inputMessage);
-        if (this.isCausallyReady(inputMessage.vectortimestamp)) {
-            // Retrieve deliverable messages and remove them from bufferedMessages
-            List<Message> dm = this.getDeliverableMessages();
-            dm.forEach(this::onDelivery);
-        } 
+        List<Message> dm = this.getDeliverableMessages();
+        dm.forEach(this::onDelivery);
     }
 
 
