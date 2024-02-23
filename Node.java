@@ -1,6 +1,7 @@
 
 import java.io.BufferedWriter;
 import java.io.EOFException;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -45,6 +46,7 @@ public class Node {
         for (int i = 0; i < numProc; i++) {
             vectorclock[i] = 0;
         }
+        this.createLogFile();
     }
 
     private synchronized void updateClock(int from) {
@@ -102,6 +104,27 @@ public class Node {
         } else {
             this.bufferedMessages.add(inputMessage);
 
+        }
+    }
+
+
+    public void createLogFile() {
+        String filePath = "./log/deliveredmessages" + this.uid + ".txt";
+        File file = new File(filePath);
+        if (file.exists()) {
+            if (!file.delete()) {
+                System.err.println("Failed to delete existing file: " + filePath);
+                return;
+            }
+        }
+        try {
+            if (!file.createNewFile()) {
+                System.err.println("Failed to create new file: " + filePath);
+                return;
+            }
+            System.out.println("Log file created successfully: " + filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
