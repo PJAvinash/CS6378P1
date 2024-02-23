@@ -75,7 +75,7 @@ public class Node {
     public void addNeighbor(int uid, String hostName, int port) {
         this.adjacentNodes.add(new AdjNode(uid, hostName, port));
     }
-    
+
     public boolean isCausallyReady(int[] messageTimestamp) {
         timestamplock.readLock().lock();
         boolean returnval = true;
@@ -109,6 +109,9 @@ public class Node {
             this.onDelivery(inputMessage);
             // Retrieve deliverable messages and remove them from bufferedMessages
             List<Message> dm = this.getDeliverableMessages();
+            for (Message m : dm) {
+                System.out.println(m.toString());
+            }
             dm.forEach(this::onDelivery);
         } else {
             this.bufferedMessages.add(inputMessage);
