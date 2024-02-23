@@ -109,20 +109,24 @@ public class Node {
 
 
     public void createLogFile() {
-        String filePath = "./log/deliveredmessages" + this.uid + ".txt";
-        File file = new File(filePath);
-        if (file.exists()) {
-            if (!file.delete()) {
-                System.err.println("Failed to delete existing file: " + filePath);
-                return;
-            }
+        String folderName = "log";
+        File folder = new File(folderName);
+        if (!folder.exists() && !folder.mkdir()) {
+            System.err.println("Failed to create log folder.");
+            return; // Abort creating the log file
+        }
+        String fileName = folderName + "/deliveredmessages" + this.uid + ".txt";
+        File file = new File(fileName);
+        if (file.exists() && !file.delete()) {
+            System.err.println("Failed to delete existing file: " + fileName);
+            return; // Abort creating the file
         }
         try {
             if (!file.createNewFile()) {
-                System.err.println("Failed to create new file: " + filePath);
-                return;
+                System.err.println("Failed to create new file: " + fileName);
+                return; // Abort creating the file
             }
-            System.out.println("Log file created successfully: " + filePath);
+            System.out.println("Log file created successfully: " + fileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
