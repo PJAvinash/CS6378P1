@@ -234,5 +234,14 @@ public class Node {
         });
         receiverThread.start();
         senderThread.start();
+        if(this.state == NodeState.Terminated){
+            try {
+                receiverThread.join();
+                senderThread.start();
+                return;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
