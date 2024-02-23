@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,6 +22,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.Random;
+import java.util.Set;
 import java.util.TimeZone;
 
 public class Node {
@@ -35,6 +37,7 @@ public class Node {
 
     private List<Message> bufferedMessages = Collections.synchronizedList(new ArrayList<Message>());
     private List<Message> deliveredMessages = Collections.synchronizedList(new ArrayList<Message>());
+    private Set<Integer> terminationFrom = Collections.synchronizedSet(new HashSet<>());
 
     public Node(int uid, String hostname, int port, int numProc) {
         this.uid = uid;
@@ -85,25 +88,30 @@ public class Node {
         return returnval;
     }
 
+    private synchronized void updateTerminationFrom(Message inputMessage){
+        if(inputMessage.messageType == MessageType.TERMINATION){
+            this.terminationFrom.add(inputMessage.from);
+        }
+    }
+
+    private synchronized void onDelivery(Message inputMessage){
+        this.deliveredMessages.add(inputMessage);
+        this.bufferedMessages.remove(inputMessage);
+        this.logMessage(inputMessage.toString());
+        this.updateTerminationFrom(inputMessage);
+    }
+
     public synchronized void addMessage(Message inputMessage) {
         // adding a delay here doesnt make any difference
         // Thread.sleep(random.nextInt(10));
         this.updateClock(inputMessage.from);
         if (this.isCausallyReady(inputMessage.vectortimestamp)) {
-            this.deliveredMessages.add(inputMessage);
-            //System.out.println(inputMessage.toString());
-            this.logMessage(inputMessage.toString());
+            this.onDelivery(inputMessage);
             // Retrieve deliverable messages and remove them from bufferedMessages
             List<Message> dm = this.getDeliverableMessages();
-            this.deliveredMessages.addAll(dm);
-            bufferedMessages.removeAll(dm);
-            for (Message message : dm) {
-                //System.out.println(message.toString());
-                this.logMessage(message.toString());
-            }
+            dm.forEach(this::onDelivery);
         } else {
             this.bufferedMessages.add(inputMessage);
-
         }
     }
 
@@ -170,6 +178,21 @@ public class Node {
         Message message = new Message(this.uid, sendtimestamp, MessageType.TERMINATION, messageText);
         broadcastMessage(message);
     }
+    
+    private void waitForTermination() {
+        try {
+            while (this.terminationFrom.size() != this.adjacentNodes.size()) {
+                Thread.sleep(100);
+                if (Thread.currentThread().isInterrupted()) {
+                    System.out.println("Thread was interrupted.");
+                    break;
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt(); // Restore interrupted status
+        }
+    }
 
     public void startBroadcasting(int N) throws InterruptedException {
         Random random = new Random();
@@ -183,7 +206,7 @@ public class Node {
             Thread.sleep(random.nextInt(10));
         }
         this.sendTerminationMessage();
-        Thread.sleep(20000);
+        this.waitForTermination();
         this.state = NodeState.Terminated;
     }
 
