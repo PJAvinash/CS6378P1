@@ -97,6 +97,9 @@ public class Node {
     private synchronized void onDelivery(Message inputMessage){
         this.deliveredMessages.add(inputMessage);
         this.bufferedMessages.remove(inputMessage);
+        if(this.uid == 0){
+            System.out.println(inputMessage.toString());
+        }
         this.logMessage(inputMessage.toString());
         this.updateTerminationFrom(inputMessage);
     }
@@ -109,11 +112,7 @@ public class Node {
             this.onDelivery(inputMessage);
             // Retrieve deliverable messages and remove them from bufferedMessages
             List<Message> dm = this.getDeliverableMessages();
-            for (Message m : dm) {
-                if(this.uid == 0){
-                    System.out.println(m.toString());
-                }
-            }
+           
             dm.forEach(this::onDelivery);
         } else {
             this.bufferedMessages.add(inputMessage);
