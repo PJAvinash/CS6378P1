@@ -49,6 +49,6 @@ do
   echo "Starting main in $remotehost ..."
   # change CS6378/P1/CS6378P1 to your path 
   #ssh -f $netID@$remotehost "cd CS6378/P1/CS6378P1 && java Main Launcher/$configPath" &
-  ssh -f $netID@$remotehost "cd \"$updated_dir\" && java Main $configPath" &
+  ssh -f $netID@$remotehost "cd \"$updated_dir\" && java Main Launcher/$configPath" &
   sleep 1
 done
