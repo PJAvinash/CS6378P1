@@ -108,14 +108,12 @@ public class Node {
         // adding a delay here doesnt make any difference
         // Thread.sleep(random.nextInt(10));
         this.updateClock(inputMessage.from);
+        this.bufferedMessages.add(inputMessage);
         if (this.isCausallyReady(inputMessage.vectortimestamp)) {
-            this.onDelivery(inputMessage);
             // Retrieve deliverable messages and remove them from bufferedMessages
             List<Message> dm = this.getDeliverableMessages();
             dm.forEach(this::onDelivery);
-        } else {
-            this.bufferedMessages.add(inputMessage);
-        }
+        } 
     }
 
 
