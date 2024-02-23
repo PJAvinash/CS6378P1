@@ -75,7 +75,7 @@ public class Node {
     public void addNeighbor(int uid, String hostName, int port) {
         this.adjacentNodes.add(new AdjNode(uid, hostName, port));
     }
-
+    
     public boolean isCausallyReady(int[] messageTimestamp) {
         timestamplock.readLock().lock();
         boolean returnval = true;
@@ -178,7 +178,7 @@ public class Node {
         Message message = new Message(this.uid, sendtimestamp, MessageType.TERMINATION, messageText);
         broadcastMessage(message);
     }
-    
+
     private void waitForTermination() {
         try {
             while (this.terminationFrom.size() != this.adjacentNodes.size()) {
