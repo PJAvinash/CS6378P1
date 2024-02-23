@@ -13,6 +13,13 @@ netID="jxp220032"
 # Get the hostname of the current machine
 host=$(hostname)
 
+#Get the current directory
+current_dir=$(dirname "$PWD")
+# Remove "/Launcher" from the current directory
+updated_dir="${current_dir/\/Launcher}"
+echo ${updated_dir}
+
+
 # Compile the Java program in the parent directory
 cd ..
 javac *.java
@@ -29,11 +36,7 @@ do
 done
 
 echo "completed connection test"
-current_dir=$(dirname "$PWD")
-# Remove "/Launcher" from the current directory
-updated_dir="${current_dir/\/Launcher}"
 
-echo ${updated_dir}
 
 # Loop through the nodes and execute a command over SSH
 for remotehost in "${hostname_array[@]}"
