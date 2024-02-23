@@ -29,6 +29,10 @@ do
 done
 
 echo "completed connection test"
+current_dir=$(dirname "$PWD")
+# Remove "/Launcher" from the current directory
+updated_dir="${current_dir/\/Launcher}"
+
 
 # Loop through the nodes and execute a command over SSH
 for remotehost in "${hostname_array[@]}"
@@ -39,6 +43,8 @@ do
     continue
   fi
   echo "Starting main in $remotehost ..."
-  ssh -f $netID@$remotehost "cd CS6378/P1/CS6378P1 && java Main Launcher/$configPath" &
+  # change CS6378/P1/CS6378P1 to your path 
+  #ssh -f $netID@$remotehost "cd CS6378/P1/CS6378P1 && java Main Launcher/$configPath" &
+  ssh -f $netID@$remotehost "cd \"$updated_dir\" && java Main $configPath" &
   sleep 1
 done
