@@ -112,7 +112,6 @@ public class Node {
             this.onDelivery(inputMessage);
             // Retrieve deliverable messages and remove them from bufferedMessages
             List<Message> dm = this.getDeliverableMessages();
-           
             dm.forEach(this::onDelivery);
         } else {
             this.bufferedMessages.add(inputMessage);
