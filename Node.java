@@ -101,7 +101,12 @@ public class Node {
         this.bufferedMessages.remove(inputMessage);
         this.bufferedMessages.sort(null);
         if(this.uid == 0){
-            System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.getVectorClock())+ " " + Arrays.toString(bufferedMessages.get(0).vectortimestamp));
+            if(bufferedMessages.size() > 0){
+                System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.getVectorClock())+ " " + Arrays.toString(bufferedMessages.get(0).vectortimestamp));
+            }else{
+                System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.getVectorClock())+ " bufferedMessages: 0");
+            }
+            
         }
         this.logMessage(inputMessage.toString());
         this.updateTerminationFrom(inputMessage);
