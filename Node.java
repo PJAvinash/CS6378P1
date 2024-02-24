@@ -34,6 +34,7 @@ public class Node {
     private NodeState state;
     private int[] vectorclock;
     private final ReadWriteLock timestamplock = new ReentrantReadWriteLock();
+    private Object lock = new Object();
     private ArrayList<AdjNode> adjacentNodes = new ArrayList<AdjNode>();
 
     private List<Message> bufferedMessages = Collections.synchronizedList(new ArrayList<Message>());
@@ -108,10 +109,12 @@ public class Node {
     public synchronized void addMessage(Message inputMessage) {
         // adding a delay here doesnt make any difference
         // Thread.sleep(random.nextInt(10));
-        this.updateClock(inputMessage.from);
-        this.bufferedMessages.add(inputMessage);
-        List<Message> dm = this.getDeliverableMessages();
-        dm.forEach(this::onDelivery);
+        synchronized (lock) {
+            this.updateClock(inputMessage.from);
+            this.bufferedMessages.add(inputMessage);
+            List<Message> dm = this.getDeliverableMessages();
+            dm.forEach(this::onDelivery);
+        }
     }
 
 
