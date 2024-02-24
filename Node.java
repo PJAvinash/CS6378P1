@@ -78,12 +78,18 @@ public class Node {
         this.adjacentNodes.add(new AdjNode(uid, hostName, port));
     }
 
-    public boolean isCausallyReady(int[] messageTimestamp) {
+    public boolean isCausallyReady(Message message) {
         timestamplock.readLock().lock();
         boolean returnval = true;
         for (int i = 0; i < this.vectorclock.length && returnval; i++) {
-            if (vectorclock[i] < messageTimestamp[i]) {
-                returnval = false;
+            if(i != this.uid){
+                if (vectorclock[i] < message.vectortimestamp[i]) {
+                    returnval = false;
+                }
+            }else{
+                if (vectorclock[i]+1 < message.vectortimestamp[i]) {
+                    returnval = false;
+                }
             }
         }
         timestamplock.readLock().unlock();
@@ -95,10 +101,14 @@ public class Node {
             this.terminationFrom.add(inputMessage.from);
         }
     }
+    private synchronized void deliverMessage(Message inputMessage){
+        this.bufferedMessages.remove(inputMessage);
+        this.deliveredMessages.add(inputMessage);
+        this.updateClock(inputMessage.from);
+        this.onDelivery(inputMessage);
+    }
 
     private synchronized void onDelivery(Message inputMessage){
-        this.deliveredMessages.add(inputMessage);
-        this.bufferedMessages.remove(inputMessage);
         this.bufferedMessages.sort(null);
         if(this.uid == 0){
             if(bufferedMessages.size() > 0){
@@ -111,16 +121,13 @@ public class Node {
         this.logMessage(inputMessage.toString());
         this.updateTerminationFrom(inputMessage);
     }
-
+    
     public synchronized void addMessage(Message inputMessage) {
         // adding a delay here doesnt make any difference
         // Thread.sleep(random.nextInt(10));
-        synchronized (lock) {
-            this.updateClock(inputMessage.from);
-            this.bufferedMessages.add(inputMessage);
-            List<Message> dm = this.getDeliverableMessages();
-            dm.forEach(this::onDelivery);
-        }
+        this.bufferedMessages.add(inputMessage);
+        List<Message> dm = this.getDeliverableMessages();
+        dm.forEach(this::deliverMessage);
     }
 
 
@@ -172,9 +179,8 @@ public class Node {
         });
     }
 
-    public List<Message> getDeliverableMessages() {
-        List<Message> deliverableMessages = this.bufferedMessages.stream()
-                .filter(t -> isCausallyReady(t.vectortimestamp)).collect(Collectors.toList());
+    public synchronized List<Message> getDeliverableMessages() {
+        List<Message> deliverableMessages = this.bufferedMessages.stream().filter(t -> isCausallyReady(t)).collect(Collectors.toList());
         Collections.sort(deliverableMessages);
         return deliverableMessages;
     }
