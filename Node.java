@@ -99,8 +99,9 @@ public class Node {
     private synchronized void onDelivery(Message inputMessage){
         this.deliveredMessages.add(inputMessage);
         this.bufferedMessages.remove(inputMessage);
+        this.bufferedMessages.sort(null);
         if(this.uid == 0){
-            System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.vectorclock));
+            System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.getVectorClock())+ " " + Arrays.toString(bufferedMessages.get(0).vectortimestamp));
         }
         this.logMessage(inputMessage.toString());
         this.updateTerminationFrom(inputMessage);
