@@ -125,11 +125,11 @@ public class Node {
     public synchronized void addMessage(Message inputMessage) {
         // adding a delay here doesnt make any difference
         // Thread.sleep(random.nextInt(10));
-        synchronized (lock) {
+        //synchronized (lock) {
             this.bufferedMessages.add(inputMessage);
             List<Message> dm = this.getDeliverableMessages();
             dm.forEach(this::deliverMessage);
-        }
+        //}
     }
 
 
