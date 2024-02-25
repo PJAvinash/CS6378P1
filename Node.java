@@ -111,17 +111,19 @@ public class Node {
     private synchronized void onDelivery(Message inputMessage){
         this.bufferedMessages.sort(null);
         if(this.uid == 0){
+            Thread ct =  Thread.currentThread();
+            long tid = ct.threadId();
             if(bufferedMessages.size() > 0){
-                System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.getVectorClock())+ " " + Arrays.toString(bufferedMessages.get(0).vectortimestamp));
+                System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.getVectorClock())+ " " + Arrays.toString(bufferedMessages.get(0).vectortimestamp)+" tid :"+ tid);
             }else{
-                System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.getVectorClock())+ " bufferedMessages: 0");
+                System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.getVectorClock())+ " bufferedMessages: 0" + " tid :"+ tid);
             }
             
         }
         this.logMessage(inputMessage.toString());
         this.updateTerminationFrom(inputMessage);
     }
-    
+
     public synchronized void addMessage(Message inputMessage) {
         // adding a delay here doesnt make any difference
         // Thread.sleep(random.nextInt(10));
