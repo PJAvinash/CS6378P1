@@ -112,7 +112,7 @@ public class Node {
         this.bufferedMessages.sort(null);
         if(this.uid == 0){    
             if(bufferedMessages.size() > 0){
-                System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.getVectorClock())+ " " + Arrays.toString(bufferedMessages.get(0).vectortimestamp))
+                System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.getVectorClock())+ " " + Arrays.toString(bufferedMessages.get(0).vectortimestamp));
             }else{
                 System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.getVectorClock())+ " bufferedMessages: 0");
             }
