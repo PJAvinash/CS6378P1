@@ -112,7 +112,7 @@ public class Node {
         this.bufferedMessages.sort(null);
         if(this.uid == 0){
             Thread ct =  Thread.currentThread();
-            long tid = ct.threadId();
+            long tid = ct.getId();
             if(bufferedMessages.size() > 0){
                 System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.getVectorClock())+ " " + Arrays.toString(bufferedMessages.get(0).vectortimestamp)+" tid :"+ tid);
             }else{
