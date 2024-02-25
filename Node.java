@@ -19,19 +19,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.Random;
 import java.util.Set;
-import java.util.TimeZone;
 
 public class Node {
     private int numProc;
     private String hostname;
     private int uid;
     private int port;
-    private NodeState state;
+    private volatile NodeState state;
     private int[] vectorclock;
     private final ReadWriteLock timestamplock = new ReentrantReadWriteLock();
     private Object lock = new Object();
@@ -52,6 +52,11 @@ public class Node {
             vectorclock[i] = 0;
         }
         this.createLogFile();
+    }
+
+    public int getUID() {
+        int r = this.uid;
+        return r;
     }
 
     private synchronized void updateClock(int from) {
@@ -82,12 +87,12 @@ public class Node {
         timestamplock.readLock().lock();
         boolean returnval = true;
         for (int i = 0; i < this.vectorclock.length && returnval; i++) {
-            if(i != this.uid){
+            if (i != message.from) {
                 if (vectorclock[i] < message.vectortimestamp[i]) {
                     returnval = false;
                 }
-            }else{
-                if (vectorclock[i]+1 < message.vectortimestamp[i]) {
+            } else {
+                if (vectorclock[i] + 1 < message.vectortimestamp[i]) {
                     returnval = false;
                 }
             }
@@ -96,27 +101,30 @@ public class Node {
         return returnval;
     }
 
-    private synchronized void updateTerminationFrom(Message inputMessage){
-        if(inputMessage.messageType == MessageType.TERMINATION){
+    private synchronized void updateTerminationFrom(Message inputMessage) {
+        if (inputMessage.messageType == MessageType.TERMINATION) {
             this.terminationFrom.add(inputMessage.from);
         }
     }
-    private synchronized void deliverMessage(Message inputMessage){
+
+    private synchronized void deliverMessage(Message inputMessage) {
         this.bufferedMessages.remove(inputMessage);
         this.deliveredMessages.add(inputMessage);
         this.updateClock(inputMessage.from);
         this.onDelivery(inputMessage);
     }
 
-    private synchronized void onDelivery(Message inputMessage){
+    private synchronized void onDelivery(Message inputMessage) {
         this.bufferedMessages.sort(null);
-        if(this.uid == 0){    
-            if(bufferedMessages.size() > 0){
-                System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.getVectorClock())+ " " + Arrays.toString(bufferedMessages.get(0).vectortimestamp));
-            }else{
-                System.out.println(inputMessage.toString()+ " vc: "+ Arrays.toString(this.getVectorClock())+ " bufferedMessages: 0");
+        if (this.uid == 0) {
+            if (bufferedMessages.size() > 0) {
+                System.out.println(inputMessage.toString() + " vc: " + Arrays.toString(this.getVectorClock()) + " "
+                        + Arrays.toString(bufferedMessages.get(0).vectortimestamp));
+            } else {
+                System.out.println(inputMessage.toString() + " vc: " + Arrays.toString(this.getVectorClock())
+                        + " bufferedMessages: 0");
             }
-            
+
         }
         this.logMessage(inputMessage.toString());
         this.updateTerminationFrom(inputMessage);
@@ -125,13 +133,13 @@ public class Node {
     public synchronized void addMessage(Message inputMessage) {
         // adding a delay here doesnt make any difference
         // Thread.sleep(random.nextInt(10));
-        //synchronized (lock) {
-            this.bufferedMessages.add(inputMessage);
-            List<Message> dm = this.getDeliverableMessages();
-            dm.forEach(this::deliverMessage);
-        //}
-    }
+        // synchronized (lock) {
 
+        this.bufferedMessages.add(inputMessage);
+        List<Message> dm = this.getDeliverableMessages();
+        dm.forEach(this::deliverMessage);
+        // }
+    }
 
     public void createLogFile() {
         String folderName = "log";
@@ -159,13 +167,13 @@ public class Node {
 
     private void logMessage(String message) {
         String filePath = "./log/deliveredmessages" + this.uid + ".txt";
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String formattedDate = sdf.format(new Date());
+        // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        // String formattedDate = sdf.format(new Date());
         try (FileWriter fw = new FileWriter(filePath, true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 PrintWriter out = new PrintWriter(bw)) {
-            out.println("UTC: " + formattedDate + " " + message);
+            out.println("uid: " + this.uid + " " + message);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -182,7 +190,8 @@ public class Node {
     }
 
     public synchronized List<Message> getDeliverableMessages() {
-        List<Message> deliverableMessages = this.bufferedMessages.stream().filter(t -> isCausallyReady(t)).collect(Collectors.toList());
+        List<Message> deliverableMessages = this.bufferedMessages.stream().filter(t -> isCausallyReady(t))
+                .collect(Collectors.toList());
         Collections.sort(deliverableMessages);
         return deliverableMessages;
     }
@@ -277,6 +286,7 @@ public class Node {
                     }
                 });
             }
+
         } finally {
             serverSocket.close();
             executor.shutdown();
@@ -296,18 +306,12 @@ public class Node {
                 this.startBroadcasting(N);
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+
             }
         });
         receiverThread.start();
         senderThread.start();
-        if(this.state == NodeState.Terminated){
-            try {
-                receiverThread.join();
-                senderThread.start();
-                return;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        return;
     }
 }

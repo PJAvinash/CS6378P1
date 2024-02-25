@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException{
@@ -40,36 +41,31 @@ public class Main {
         int numNodes = uidlist.size();
         InetAddress ip = InetAddress.getLocalHost();
         String hostname = ip.getHostName();
-        int index =  hostnames.indexOf(hostname);
-        int uid = uidlist.get(index);
-        int port = portnumbers.get(index);
-        Node processingNode = new Node(uid,hostname,port,numNodes);
-        for(int i = 0; i< numNodes ; i++){
-            if(i != index){
-                processingNode.addNeighbor(uidlist.get(i), hostnames.get(i), portnumbers.get(i));
+        System.err.println(hostname);
+        List<Node> hostProcs = new ArrayList<Node>();
+        for(int i = 0; i< numNodes;i++){
+            if(hostnames.get(i).equals(hostname)){
+                hostProcs.add(new Node(uidlist.get(i),hostname,portnumbers.get(i),numNodes));
             }
         }
-        processingNode.runCausalBroadcast(20);
+        // int index =  hostnames.indexOf(hostname);
+        // int uid = uidlist.get(index);
+        // int port = portnumbers.get(index);
+        // Node processingNode = new Node(uid,hostname,port,numNodes);
+        for(int i = 0; i < numNodes; i++){
+            for(Node n: hostProcs){
+                if(i != n.getUID()){
+                    n.addNeighbor(uidlist.get(i), hostnames.get(i), portnumbers.get(i));
+                }
+            }
+        }
+        // for(int i = 0; i< numNodes ; i++){
+        //     if(i != index){
+        //         processingNode.addNeighbor(uidlist.get(i), hostnames.get(i), portnumbers.get(i));
+        //     }
+        // }
+        System.out.println("starting"+hostProcs.size());
+        hostProcs.forEach(t-> t.runCausalBroadcast(20));
+        // processingNode.runCausalBroadcast(20);
     }
 }
-
-// import java.util.Arrays;
-
-// public class Main {
-//     public static void main(String[] args) {
-//         // Create test array of Message objects
-//         Message[] messages = {
-//             new Message(2, new int[]{101, 101, 37, 101}, MessageType.BROADCAST, "content1"),
-//             new Message(2, new int[]{101, 101, 39, 101}, MessageType.BROADCAST, "content2"),
-//             new Message(2, new int[]{101, 101, 38, 101}, MessageType.BROADCAST, "content3")
-//         };
-
-//         // Sort the array of messages
-//         Arrays.sort(messages);
-
-//         // Print the sorted array
-//         for (Message message : messages) {
-//             System.out.println(message);
-//         }
-//     }
-// }
