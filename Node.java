@@ -10,16 +10,13 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
@@ -56,6 +53,10 @@ public class Node {
 
     public int getUID() {
         int r = this.uid;
+        return r;
+    }
+    public NodeState getState(){
+        NodeState r = this.state;
         return r;
     }
 
@@ -115,30 +116,20 @@ public class Node {
     }
 
     private synchronized void onDelivery(Message inputMessage) {
-        this.bufferedMessages.sort(null);
         if (this.uid == 0) {
-            if (bufferedMessages.size() > 0) {
-                System.out.println(inputMessage.toString() + " vc: " + Arrays.toString(this.getVectorClock()) + " "
-                        + Arrays.toString(bufferedMessages.get(0).vectortimestamp));
-            } else {
-                System.out.println(inputMessage.toString() + " vc: " + Arrays.toString(this.getVectorClock())
-                        + " bufferedMessages: 0");
-            }
-
+            System.out.println(inputMessage.toString() + " vc: " + Arrays.toString(this.getVectorClock()) + "  bufferedMessages " + bufferedMessages.size());
         }
         this.logMessage(inputMessage.toString());
         this.updateTerminationFrom(inputMessage);
     }
 
     public synchronized void addMessage(Message inputMessage) {
+        // Random random = new Random();
         // adding a delay here doesnt make any difference
-        // Thread.sleep(random.nextInt(10));
-        // synchronized (lock) {
-
+        // Thread.sleep(random.nextInt(10)); 
         this.bufferedMessages.add(inputMessage);
         List<Message> dm = this.getDeliverableMessages();
         dm.forEach(this::deliverMessage);
-        // }
     }
 
     public void createLogFile() {
@@ -167,9 +158,6 @@ public class Node {
 
     private void logMessage(String message) {
         String filePath = "./log/deliveredmessages" + this.uid + ".txt";
-        // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        // String formattedDate = sdf.format(new Date());
         try (FileWriter fw = new FileWriter(filePath, true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 PrintWriter out = new PrintWriter(bw)) {

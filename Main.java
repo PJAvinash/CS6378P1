@@ -48,10 +48,6 @@ public class Main {
                 hostProcs.add(new Node(uidlist.get(i),hostname,portnumbers.get(i),numNodes));
             }
         }
-        // int index =  hostnames.indexOf(hostname);
-        // int uid = uidlist.get(index);
-        // int port = portnumbers.get(index);
-        // Node processingNode = new Node(uid,hostname,port,numNodes);
         for(int i = 0; i < numNodes; i++){
             for(Node n: hostProcs){
                 if(i != n.getUID()){
@@ -59,13 +55,21 @@ public class Main {
                 }
             }
         }
-        // for(int i = 0; i< numNodes ; i++){
-        //     if(i != index){
-        //         processingNode.addNeighbor(uidlist.get(i), hostnames.get(i), portnumbers.get(i));
-        //     }
-        // }
         System.out.println("starting"+hostProcs.size());
         hostProcs.forEach(t-> t.runCausalBroadcast(20));
-        // processingNode.runCausalBroadcast(20);
+        boolean procisactive = true;
+        while(procisactive){
+            procisactive = false;
+            for(Node hp: hostProcs){
+                if(hp.getState() == NodeState.Running){
+                    procisactive = true;
+                }
+            }
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+            }
+        }
+        System.exit(0);
     }
 }
