@@ -31,7 +31,6 @@ public class Node {
     private volatile NodeState state;
     private int[] vectorclock;
     private final ReadWriteLock timestamplock = new ReentrantReadWriteLock();
-    private Object lock = new Object();
     private ArrayList<AdjNode> adjacentNodes = new ArrayList<AdjNode>();
 
     private List<Message> bufferedMessages = Collections.synchronizedList(new ArrayList<Message>());
@@ -215,8 +214,8 @@ public class Node {
             int[] sendTimestamp = this.getVectorClock();
             Message message = new Message(this.uid, sendTimestamp, MessageType.BROADCAST, messageText);
             broadcastMessage(message);
-            // Sleep for a random duration between 0 and 10 milliseconds
-            Thread.sleep(random.nextInt(10));
+            // Sleep for a random duration between 0 and 20 milliseconds
+            Thread.sleep(random.nextInt(20));
         }
         this.sendTerminationMessage();
         this.waitForTermination();

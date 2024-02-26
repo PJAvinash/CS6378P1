@@ -14,7 +14,7 @@ after receiving m at j from i;
     V_j[i]++
 
 isReadyForCausalDelivery(inboundMessage, Process_i):
-    return ( For All k inboundMessage.vectortimestamp[k] <= V_i[k])
+    return ( For All k != SENDER inboundMessage.vectortimestamp[k] <= V_i[k] && inboundMessage.vectortimestamp[SENDER] <= V_i[SENDER]+1 )
 
 
 For execution, clone this repo https://github.com/PJAvinash/CS6378P1.git
