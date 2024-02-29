@@ -56,7 +56,7 @@ public class Main {
             }
         }
         System.out.println("starting"+hostProcs.size());
-        hostProcs.forEach(t-> t.runCausalBroadcast(20));
+        hostProcs.forEach(t-> t.runCausalBroadcast(100));
         boolean procisactive = true;
         while(procisactive){
             procisactive = false;

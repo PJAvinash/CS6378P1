@@ -116,8 +116,8 @@ public class Node {
 
     private synchronized void onDelivery(Message inputMessage) {
         String logmessage = inputMessage.toString() + " vc: " + Arrays.toString(this.getVectorClock()) + "  bufferedMessages " + bufferedMessages.size();
-        if(bufferedMessages.size() > 0){
-            logmessage.concat("firstbm :"+bufferedMessages.get(0).toString());
+        if(bufferedMessages.size() > 0) {
+            logmessage = logmessage + " firstbm: " + bufferedMessages.get(0).toString();
         }
         if (this.uid == 0) {
             System.out.println(logmessage);
@@ -219,7 +219,7 @@ public class Node {
             Message message = new Message(this.uid, sendTimestamp, MessageType.BROADCAST, messageText);
             broadcastMessage(message);
             // Sleep for a random duration between 0 and 20 milliseconds
-            Thread.sleep(random.nextInt(20));
+            Thread.sleep(random.nextInt(200));
         }
         this.sendTerminationMessage();
         this.waitForTermination();
