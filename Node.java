@@ -222,7 +222,7 @@ public class Node {
             Message message = new Message(this.uid, sendTimestamp, MessageType.BROADCAST, messageText);
             broadcastMessage(message);
             // Sleep for a random duration between 0 and 20 milliseconds
-            Thread.sleep(random.nextInt(200));
+            Thread.sleep(random.nextInt(50));
         }
         this.sendTerminationMessage();
         this.waitForTermination();
