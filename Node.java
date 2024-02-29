@@ -132,7 +132,10 @@ public class Node {
         // Thread.sleep(random.nextInt(10)); 
         this.bufferedMessages.add(inputMessage);
         List<Message> dm = this.getDeliverableMessages();
-        dm.forEach(this::deliverMessage);
+        while(dm.size() > 0){
+            dm.forEach(this::deliverMessage);
+            dm = this.getDeliverableMessages();
+        }
     }
 
     public void createLogFile() {
