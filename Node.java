@@ -116,6 +116,9 @@ public class Node {
 
     private synchronized void onDelivery(Message inputMessage) {
         String logmessage = inputMessage.toString() + " vc: " + Arrays.toString(this.getVectorClock()) + "  bufferedMessages " + bufferedMessages.size();
+        if(bufferedMessages.size() > 0){
+            logmessage.concat("firstbm :"+bufferedMessages.get(0).toString());
+        }
         if (this.uid == 0) {
             System.out.println(logmessage);
         }
