@@ -115,10 +115,11 @@ public class Node {
     }
 
     private synchronized void onDelivery(Message inputMessage) {
+        String logmessage = inputMessage.toString() + " vc: " + Arrays.toString(this.getVectorClock()) + "  bufferedMessages " + bufferedMessages.size();
         if (this.uid == 0) {
-            System.out.println(inputMessage.toString() + " vc: " + Arrays.toString(this.getVectorClock()) + "  bufferedMessages " + bufferedMessages.size());
+            System.out.println(logmessage);
         }
-        this.logMessage(inputMessage.toString());
+        this.logMessage(logmessage);
         this.updateTerminationFrom(inputMessage);
     }
 
@@ -220,6 +221,7 @@ public class Node {
         this.sendTerminationMessage();
         this.waitForTermination();
         this.state = NodeState.Terminated;
+        System.out.println("uid:"+ this.uid +"terminating.");
     }
 
     public void sendMessageTCP(Message message, String host, int port) throws IOException {
