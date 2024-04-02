@@ -19,9 +19,16 @@ The algorithm utilizes vector clocks for maintaining the causal ordering of mess
 
 # Execution
 - go to /Launcher in terminal run 
-```chmod +x launcher.sh && ./launcher.sh config.txt```
+```
+chmod +x launcher.sh && ./launcher.sh config.txt
+```
+
 - For cleaning up processes 
-```chmod +x cleanup.sh && ./cleanup.sh config.txt```
+```
+chmod +x cleanup.sh && ./cleanup.sh config.txt
+```
+
+
 
 # Contributers
 PJ Avinash
