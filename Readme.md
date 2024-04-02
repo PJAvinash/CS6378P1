@@ -5,7 +5,7 @@ This repository contains a Java implementation of Causal Order Broadcast using v
 The algorithm utilizes vector clocks for maintaining the causal ordering of messages among different processes. Here are the key details of the algorithm:
 
 **Causal Delivery Condition using Vector Clocks**
-For N processes, V_i[1,...N] represents the vector timestamp of the ith process.
+- For N processes, V_i[1,...N] represents the vector timestamp of the ith process.
 - before send from i: 
 - - V_i[i]++
 - - message.timestamp = V_i
