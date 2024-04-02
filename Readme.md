@@ -1,26 +1,29 @@
-Here I implemented a simple program for Causally Ordered Broadcast in a distributed system.
+# Causal Order Broadcast Implementation in Java
+This repository contains a Java implementation of Causal Order Broadcast using vector clocks for ordering among send/receive events.
 
-We use vector clocks for ordering amound send/receive events
-If we have N processes, 
-V_i[1,...N] be the vectortime stamp of ith process. 
+# Algorithm Details
+The algorithm utilizes vector clocks for maintaining the causal ordering of messages among different processes. Here are the key details of the algorithm:
 
-Algorithm details:
+**Causal Delivery Condition using Vector Clocks**
+For N processes, V_i[1,...N] represents the vector timestamp of the ith process.
+- before send from i: 
+- - V_i[i]++
+- - message.timestamp = V_i
 
-before send from i: 
-    V_i[i]++
-    message.timestamp = V_i
+- after receiving m at j from i;
+- - V_j[i]++
 
-after receiving m at j from i;
-    V_j[i]++
+- Before sending a message from process i, increment V_i[i] and set message.timestamp = V_i.
+- Upon receiving message m at process j from process i, increment V_j[i].
+- The function isReadyForCausalDelivery(inboundMessage, Process_i) determines whether an inbound message is ready for causal delivery at process i. It checks the following condition:
 
-isReadyForCausalDelivery(inboundMessage, Process_i):
-    return ( For All k != SENDER inboundMessage.vectortimestamp[k] <= V_i[k] && inboundMessage.vectortimestamp[SENDER] <= V_i[SENDER]+1 )
+# Execution
+- go to /Launcher in terminal run 'chmod +x launcher.sh && ./launcher.sh config.txt'
+- For cleaning up processes 'chmod +x cleanup.sh && ./cleanup.sh config.txt'
 
+# Contributers
+PJ Avinash
 
-For execution, clone this repo https://github.com/PJAvinash/CS6378P1.git
-
-go to /Launcher in terminal run 'chmod +x launcher.sh && ./launcher.sh config.txt'
-For cleaning up processes 'chmod +x cleanup.sh && ./cleanup.sh config.txt'
 
 
 
